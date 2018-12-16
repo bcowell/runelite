@@ -30,16 +30,17 @@ import net.runelite.client.plugins.zulrah.phase.ZulrahPhase;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.ImagePanelComponent;
+import net.runelite.client.ui.overlay.components.ImageComponent;
+import net.runelite.client.ui.overlay.components.LineComponent;
+import net.runelite.client.ui.overlay.components.PanelComponent;
 
 import javax.inject.Inject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-public abstract class ZulrahCurrentPhaseOverlay extends Overlay
+public class ZulrahCurrentPhaseOverlay extends Overlay
 {
     private final ZulrahPlugin plugin;
 
@@ -52,7 +53,7 @@ public abstract class ZulrahCurrentPhaseOverlay extends Overlay
     }
 
     @Override
-    public Dimension render(Graphics2D graphics, Point parent)
+    public Dimension render(Graphics2D graphics)
     {
         ZulrahInstance instance = plugin.getInstance();
 
@@ -71,10 +72,13 @@ public abstract class ZulrahCurrentPhaseOverlay extends Overlay
         String title = currentPhase.isJad() ? "JAD PHASE" : pattern;
         Color backgroundColor = currentPhase.getColor();
         BufferedImage zulrahImage = ZulrahImageManager.getZulrahBufferedImage(currentPhase.getType());
-        ImagePanelComponent imagePanelComponent = new ImagePanelComponent();
-        imagePanelComponent.setTitle(title);
+
+        PanelComponent imagePanelComponent = new PanelComponent();
+        imagePanelComponent.getChildren().add(LineComponent.builder()
+                .left(title)
+                .build());
         imagePanelComponent.setBackgroundColor(backgroundColor);
-        imagePanelComponent.setImage(zulrahImage);
-        return imagePanelComponent.render(graphics, parent);
+        imagePanelComponent.getChildren().add(new ImageComponent(zulrahImage));
+        return imagePanelComponent.render(graphics);
     }
 }

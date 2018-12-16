@@ -30,29 +30,32 @@ import net.runelite.client.plugins.zulrah.phase.ZulrahPhase;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.ImagePanelComponent;
+import net.runelite.client.ui.overlay.components.ImageComponent;
+import net.runelite.client.ui.overlay.components.LineComponent;
+import net.runelite.client.ui.overlay.components.PanelComponent;
 
 import javax.inject.Inject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 public class ZulrahNextPhaseOverlay extends Overlay
 {
     private final ZulrahPlugin plugin;
+    private final PanelComponent imagePanelComponent = new PanelComponent();
 
     @Inject
     ZulrahNextPhaseOverlay(ZulrahPlugin plugin)
     {
-        setPosition(OverlayPosition.BOTTOM_RIGHT);
+        setPosition(OverlayPosition.TOP_RIGHT);
         setPriority(OverlayPriority.HIGH);
         this.plugin = plugin;
+        imagePanelComponent.setOrientation(PanelComponent.Orientation.HORIZONTAL);
     }
 
     @Override
-    public Dimension render(Graphics2D graphics, Point parent)
+    public Dimension render(Graphics2D graphics)
     {
         ZulrahInstance instance = plugin.getInstance();
 
@@ -69,10 +72,14 @@ public class ZulrahNextPhaseOverlay extends Overlay
 
         Color backgroundColor = nextPhase.getColor();
         BufferedImage zulrahImage = ZulrahImageManager.getSmallZulrahBufferedImage(nextPhase.getType());
-        ImagePanelComponent imagePanelComponent = new ImagePanelComponent();
-        imagePanelComponent.setTitle("Next");
+
+        imagePanelComponent.getChildren().clear();
+        imagePanelComponent.getChildren().add(LineComponent.builder()
+                .left("Next Phase:")
+                .right(nextPhase.toString())
+                .build());
         imagePanelComponent.setBackgroundColor(backgroundColor);
-        imagePanelComponent.setImage(zulrahImage);
-        return imagePanelComponent.render(graphics, parent);
+        imagePanelComponent.getChildren().add(new ImageComponent(zulrahImage));
+        return imagePanelComponent.render(graphics);
     }
 }
